@@ -19,7 +19,8 @@ print("✅ Model loaded successfully!")
 # ----------------------
 @app.route('/')
 def index():
-    return render_template('index.html')  # your dashboard HTML
+    return render_template('index.html')
+
 
 @app.route('/predict-image', methods=['POST'])
 def predict_image_route():
@@ -31,33 +32,29 @@ def predict_image_route():
         return jsonify({'error': 'Empty filename'}), 400
 
     try:
-        # Read image
         img_bytes = file.read()
         image = Image.open(io.BytesIO(img_bytes)).convert("RGB")
 
-        # Predict
-        results = model.predict(source=np.array(image), imgsz=640)  # 640x640 size
+        results = model.predict(source=np.array(image), imgsz=640)
         detections = []
 
-        # Parse predictions
-        for r in results:
-            boxes = r.boxes  # Boxes object
-            for box in boxes:
-                x1, y1, x2, y2 = box.xyxy[0].tolist()  # get box coords
-                conf = float(box.conf[0])  # confidence
-                cls_idx = int(box.cls[0])  # class index
-                cls_name = model.names[cls_idx]  # class name
+        width, height = image.size
 
-                # Convert to normalized coordinates (0-1) for frontend bounding boxes
-                width, height = image.size
+        for r in results:
+            for box in r.boxes:
+                x1, y1, x2, y2 = box.xyxy[0].tolist()
+                conf = float(box.conf[0])
+                cls_idx = int(box.cls[0])
+                cls_name = model.names[cls_idx]
+
                 detections.append({
                     'class': cls_name,
                     'confidence': conf,
                     'box': [
-                        x1/width,  # x
-                        y1/height, # y
-                        (x2-x1)/width,  # w
-                        (y2-y1)/height  # h
+                        x1 / width,
+                        y1 / height,
+                        (x2 - x1) / width,
+                        (y2 - y1) / height
                     ]
                 })
 
@@ -66,6 +63,47 @@ def predict_image_route():
     except Exception as e:
         print("Error predicting image:", e)
         return jsonify({'error': str(e)}), 500
+
+
+@app.route('/predict-frame', methods=['POST'])
+def predict_frame_route():
+    if 'frame' not in request.files:
+        return jsonify([])
+
+    try:
+        file = request.files['frame']
+        img_bytes = file.read()
+        image = Image.open(io.BytesIO(img_bytes)).convert("RGB")
+
+        results = model.predict(source=np.array(image), imgsz=640)
+        detections = []
+
+        width, height = image.size
+
+        for r in results:
+            for box in r.boxes:
+                x1, y1, x2, y2 = box.xyxy[0].tolist()
+                conf = float(box.conf[0])
+                cls_idx = int(box.cls[0])
+                cls_name = model.names[cls_idx]
+
+                detections.append({
+                    'class': cls_name,
+                    'confidence': conf,
+                    'box': [
+                        x1 / width,
+                        y1 / height,
+                        (x2 - x1) / width,
+                        (y2 - y1) / height
+                    ]
+                })
+
+        return jsonify(detections)
+
+    except Exception as e:
+        print("Live frame error:", e)
+        return jsonify([])
+
 
 # ----------------------
 # Run

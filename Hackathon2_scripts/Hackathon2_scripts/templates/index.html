@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AstraSafe - Space Station Safety Monitor</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="static/style.css">
+
+</head>
+<body class="overflow-x-hidden bg-black text-white">
+    <canvas id="bg-canvas" class="fixed top-0 left-0 w-full h-full z-0"></canvas>
+
+    <!-- Header -->
+    <header class="fixed top-0 left-0 right-0 z-50 glass-panel border-b border-purple-900/50 mx-4 my-4">
+        <nav class="max-w-7xl mx-auto px-6 py-3 flex justify-between items-center">
+            <a href="#" class="text-2xl font-bold tracking-tighter">AstraSafe</a>
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="#dashboard" class="nav-link font-semibold text-gray-300 hover:text-purple-400 transition-colors">Live Demo</a>
+                <a href="#features" class="nav-link font-semibold text-gray-300 hover:text-purple-400 transition-colors">Features</a>
+                <a href="#mission" class="nav-link font-semibold text-gray-300 hover:text-purple-400 transition-colors">The Mission</a>
+                <a href="#falcon" class="nav-link font-semibold text-gray-300 hover:text-purple-400 transition-colors">Falcon Integration</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="relative z-10">
+        <!-- Hero Section -->
+        <section id="hero" class="min-h-screen flex flex-col items-center justify-center text-center px-4">
+            <div class="stats-badge flex items-center gap-2 mb-4 bg-black/50 py-1 px-3 rounded-full text-sm text-white">
+                <i class="fas fa-check-circle text-green-400"></i>
+                <span>7 Safety Objects Detected</span>
+            </div>
+            <h1 class="text-5xl md:text-7xl font-bold text-white tracking-tighter">Automated Safety for the Final Frontier</h1>
+            <p class="text-lg md:text-xl text-gray-300 mt-4 max-w-3xl">AstraSafe provides a vigilant, 24/7 monitoring solution, ensuring the safety of crew and critical assets in orbital habitats.</p>
+            <div class="flex gap-4 mt-8">
+                <a href="#dashboard" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-8 rounded-full text-lg transition-colors">See It In Action</a>
+            </div>
+        </section>
+
+        <!-- Dashboard Section -->
+<section id="dashboard" class="py-20 px-4">
+    <h2 class="section-header text-white text-3xl font-bold mb-8">Live Operations Dashboard</h2>
+    <div class="max-w-screen-2xl mx-auto grid grid-cols-12 gap-6">
+
+        <!-- Left Panel -->
+        <div class="col-span-12 lg:col-span-3 space-y-6">
+            <div class="glass-panel p-6">
+                <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
+                    <i class="fas fa-chart-pie text-purple-400"></i> Detection Stats
+                </h3>
+                <div id="detection-stats-container" class="space-y-4"></div>
+            </div>
+            <div class="glass-panel p-6">
+                <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
+                    <i class="fas fa-cubes text-purple-400"></i> Safety Objects
+                </h3>
+                <div id="safety-objects-container" class="space-y-2"></div>
+            </div>
+        </div>
+
+        <!-- Center Panel -->
+        <div class="col-span-12 lg:col-span-6 space-y-6">
+
+            <!-- Tabs -->
+            <div class="glass-panel p-2 flex space-x-2">
+                <button id="tab-live" class="flex-1 flex items-center justify-center space-x-2 py-3 rounded-xl transition-all hover:bg-purple-800/50">
+                    <i class="fas fa-video"></i> <span>Live Feed</span>
+                </button>
+                <button id="tab-upload" class="flex-1 flex items-center justify-center space-x-2 py-3 rounded-xl transition-all hover:bg-purple-800/50">
+                    <i class="fas fa-upload"></i> <span>Upload Image</span>
+                </button>
+                <button id="tab-falcon" class="flex-1 flex items-center justify-center space-x-2 py-3 rounded-xl transition-all hover:bg-purple-800/50">
+                    <i class="fas fa-sync-alt"></i> <span>Falcon Updates</span>
+                </button>
+            </div>
+
+            <!-- Live Feed Content -->
+            <div id="content-live">
+                <div class="aspect-video bg-black rounded-lg border-2 border-purple-900/50 flex items-center justify-center relative overflow-hidden">
+                    <video
+                        id="live-feed-display"
+                        class="w-full h-full object-contain"
+                        autoplay
+                        muted
+                        playsinline
+                    ></video>
+            </div>
+
+                <button id="toggle-live-btn" class="mt-4 w-full py-3 rounded-xl font-semibold transition-all flex items-center justify-center space-x-2 bg-purple-600 hover:bg-purple-700">
+                    <i class="fas fa-play"></i>
+                    <span>Start Live Feed</span>
+                </button>
+            </div>
+
+            <!-- Upload Content -->
+            <div id="content-upload" class="hidden">
+                <div id="upload-drop-zone" class="aspect-video bg-black rounded-lg border-2 border-dashed border-purple-900/50 hover:border-purple-500/80 transition-colors cursor-pointer flex items-center justify-center relative overflow-hidden">
+                    <img id="upload-image-display" src="" alt="Uploaded Preview" class="hidden w-full h-full object-contain">
+                    <div id="upload-placeholder" class="text-center text-purple-300">
+                        <i class="fas fa-cloud-upload-alt text-5xl mb-4"></i>
+                        <p class="font-semibold">Click or drag & drop to upload</p>
+                    </div>
+                </div>
+                <input type="file" id="imageUpload" class="hidden" accept="image/png, image/jpeg">
+
+                <!-- Detected objects list -->
+                <div id="uploaded-detections-list" class="mt-4 text-sm text-purple-300"></div>
+            </div>
+
+            <!-- Falcon Content -->
+            <div id="content-falcon" class="hidden space-y-6">
+                <div class="bg-purple-500/10 rounded-xl p-6 border border-purple-500/30">
+                    <div class="flex items-start space-x-4">
+                        <div class="flex-shrink-0 w-12 h-12 bg-purple-500 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-sync-alt text-2xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-white">Falcon Model Update System</h3>
+                            <p class="text-sm text-purple-200 mt-1 mb-4">Our AI model stays current through continuous updates from Falcon's digital twin platform.</p>
+                            <div class="flex items-center space-x-6 text-sm">
+                                <div class="flex items-center space-x-2">
+                                    <i class="fas fa-check-circle text-green-400"></i>
+                                    <span class="text-gray-300">Last Updated: <strong class="text-white">2 hours ago</strong></span>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <i class="fas fa-bolt text-yellow-400"></i>
+                                    <span class="text-gray-300">Next Update: <strong class="text-white">4 hours</strong></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-6">
+                    <div class="bg-black/20 p-4 rounded-xl border border-white/10">
+                        <div class="text-sm text-purple-300 mb-1">Update Frequency</div>
+                        <div class="text-2xl font-bold text-white">Every 6h</div>
+                    </div>
+                    <div class="bg-black/20 p-4 rounded-xl border border-white/10">
+                        <div class="text-sm text-purple-300 mb-1">Training Scenarios</div>
+                        <div class="text-2xl font-bold text-white">1,247</div>
+                    </div>
+                </div>
+
+                <div class="bg-black/20 p-6 rounded-xl border border-white/10">
+                    <h4 class="font-semibold text-white mb-4 flex items-center">
+                        <i class="fas fa-cog mr-2 text-purple-400"></i> Automatic Update Pipeline
+                    </h4>
+                    <div class="space-y-4">
+                        <div class="flex items-start space-x-4">
+                            <div class="flex-shrink-0 w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-xs font-bold text-white">1</div>
+                            <div>
+                                <h5 class="font-semibold text-white">Detect New Objects or Changes</h5>
+                                <p class="text-sm text-gray-400">Real-world monitoring identifies anomalies</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-4">
+                            <div class="flex-shrink-0 w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-xs font-bold text-white">2</div>
+                            <div>
+                                <h5 class="font-semibold text-white">Generate Synthetic Data in Falcon</h5>
+                                <p class="text-sm text-gray-400">Create diverse training scenarios</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-4">
+                            <div class="flex-shrink-0 w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center text-xs font-bold text-white">3</div>
+                            <div>
+                                <h5 class="font-semibold text-white">Retrain & Deploy Model</h5>
+                                <p class="text-sm text-gray-400">Automatic validation and deployment</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Panel -->
+        <div class="col-span-12 lg:col-span-3 space-y-6">
+            <div class="glass-panel p-6">
+                <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
+                    <i class="fas fa-history text-yellow-400"></i> Recent Detections
+                </h3>
+                <div id="recent-detections-container" class="space-y-3 max-h-64 overflow-y-auto">
+                    <div class="text-center py-8 text-purple-300/60">
+                        <i class="fas fa-stream opacity-50 text-3xl mb-2"></i>
+                        <p class="text-sm">No recent detections</p>
+                    </div>
+                </div>
+            </div>
+            <div class="glass-panel p-6">
+                <h3 class="text-lg font-semibold mb-4">Quick Actions</h3>
+                <div class="space-y-2">
+                    <button class="w-full py-2 bg-purple-500/20 hover:bg-purple-500/40 rounded-lg text-sm transition-colors">Export Report</button>
+                    <button class="w-full py-2 bg-purple-500/20 hover:bg-purple-500/40 rounded-lg text-sm transition-colors">View Analytics</button>
+                    <button class="w-full py-2 bg-purple-500/20 hover:bg-purple-500/40 rounded-lg text-sm transition-colors">Configure Alerts</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+        <section id="features" class="py-20 px-4 bg-gradient-to-b from-transparent to-purple-900/10">
+            <h2 class="section-header text-white">Advanced AI Capabilities</h2>
+            <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="glass-panel p-6 text-center">
+                    <i class="fas fa-bolt feature-icon mb-4"></i>
+                    <h3 class="text-lg font-bold mb-2 text-white">Real-Time Detection</h3>
+                    <p class="text-gray-400 text-sm">Process video feeds at 30+ FPS for instant safety alerts</p>
+                </div>
+                <div class="glass-panel p-6 text-center">
+                    <i class="fas fa-brain feature-icon mb-4"></i>
+                    <h3 class="text-lg font-bold mb-2 text-white">High Accuracy</h3>
+                    <p class="text-gray-400 text-sm">74.2%+ mAP score across all safety equipment classes</p>
+                </div>
+                <div class="glass-panel p-6 text-center">
+                    <i class="fas fa-adjust feature-icon mb-4"></i>
+                    <h3 class="text-lg font-bold mb-2 text-white">Lighting Adaptive</h3>
+                    <p class="text-gray-400 text-sm">Works in varied lighting from full sun to emergency lighting</p>
+                </div>
+                <div class="glass-panel p-6 text-center">
+                    <i class="fas fa-sync-alt feature-icon mb-4"></i>
+                    <h3 class="text-lg font-bold mb-2 text-white">Auto-Updates</h3>
+                    <p class="text-gray-400 text-sm">Continuously improved via Falcon synthetic data</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="mission" class="py-20 px-4">
+            <h2 class="section-header text-white">The Mission: A Safer Tomorrow in Space</h2>
+            <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="glass-panel p-8 text-center flex flex-col items-center">
+                    <i class="fa-solid fa-triangle-exclamation text-4xl text-teal-400 mb-4"></i>
+                    <h3 class="text-xl font-bold mb-2 text-white">Instantly Detect Hazards</h3>
+                    <p class="text-gray-400">Identify missing fire extinguishers, misplaced equipment, or open first-aid kits in real-time before they become critical issues.</p>
+                </div>
+                <div class="glass-panel p-8 text-center flex flex-col items-center">
+                    <i class="fa-solid fa-user-astronaut text-4xl text-teal-400 mb-4"></i>
+                    <h3 class="text-xl font-bold mb-2 text-white">Reduce Crew Workload</h3>
+                    <p class="text-gray-400">Automate tedious, manual safety checks, allowing the crew to focus on high-value research and mission-critical objectives.</p>
+                </div>
+                <div class="glass-panel p-8 text-center flex flex-col items-center">
+                    <i class="fa-solid fa-rocket text-4xl text-teal-400 mb-4"></i>
+                    <h3 class="text-xl font-bold mb-2 text-white">Improve Emergency Response</h3>
+                    <p class="text-gray-400">In an emergency, our AI can immediately locate the nearest safety equipment, guiding the crew and saving precious seconds.</p>
+                </div>
+            </div>
+        </section>
+        
+        <section id="falcon" class="py-20 px-4">
+            <h2 class="section-header text-white">Evolving with Falcon</h2>
+            <div class="max-w-4xl mx-auto glass-panel p-6 lg:p-8">
+                <p class="text-center text-lg text-gray-300 mb-8">A space station is a dynamic environment. Our model must adapt to stay effective. This is where Duality AI's <strong class="text-white">Falcon platform</strong> becomes essential for continuous improvement.</p>
+                <ul class="space-y-6">
+                    <li class="flex items-start">
+                        <i class="fa-solid fa-cogs text-2xl text-orange-400 mr-4 mt-1"></i>
+                        <div>
+                            <h3 class="text-lg font-bold text-orange-300">Adapting to Equipment Changes</h3>
+                            <p class="text-gray-400">If a fire extinguisher's design is updated, we simply update the 3D model in Falcon's digital twin to generate thousands of new synthetic training images and retrain our AI.</p>
+                        </div>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fa-solid fa-plus-square text-2xl text-orange-400 mr-4 mt-1"></i>
+                        <div>
+                            <h3 class="text-lg font-bold text-orange-300">Introducing New Objects</h3>
+                            <p class="text-gray-400">When a new toolkit is added, we create its 3D model in Falcon. The platform generates perfectly labeled data, teaching our AI to recognize it without needing a single real photo.</p>
+                        </div>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fa-solid fa-lightbulb text-2xl text-orange-400 mr-4 mt-1"></i>
+                        <div>
+                            <h3 class="text-lg font-bold text-orange-300">Resolving Model Confusion</h3>
+                            <p class="text-gray-400">If the AI confuses a new tool with a 'Nitrogen Tank', we create specific, challenging scenarios in Falcon's simulation to generate targeted training data and teach it the subtle differences.</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </section>
+  <footer class="border-t border-purple-900/50 mt-20 py-8">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-6">
+            <div>
+                <h3 class="text-xl font-bold mb-4">AstraSafe</h3>
+                <p class="text-gray-400 text-sm">Protecting space crews with cutting-edge AI detection technology.</p>
+                <div class="flex gap-4 mt-4">
+                    <a href="#" class="text-gray-400 hover:text-purple-400 transition-colors"><i class="fab fa-linkedin text-xl"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-purple-400 transition-colors"><i class="fab fa-github text-xl"></i></a>
+                </div>
+            </div>
+            <div>
+                <h4 class="font-bold mb-4 text-white">Quick Links</h4>
+                <ul class="space-y-2 text-sm">
+                    <li><a href="#demo" class="text-gray-400 hover:text-purple-400 transition-colors">Live Demo</a></li>
+                    <li><a href="#upload-demo" class="text-gray-400 hover:text-purple-400 transition-colors">Try Detection</a></li>
+                    <li><a href="#falcon" class="text-gray-400 hover:text-purple-400 transition-colors">Falcon Integration</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="font-bold mb-4 text-white">Legal & Contact</h4>
+                <ul class="space-y-2 text-sm">
+                    <li><a href="#" onclick="openModal('team-modal'); return false;" class="text-gray-400 hover:text-purple-400 transition-colors cursor-pointer">Our Team</a></li>
+                    <li><a href="#" onclick="openModal('terms-modal'); return false;" class="text-gray-400 hover:text-purple-400 transition-colors cursor-pointer">Terms & Conditions</a></li>
+                    <li><a href="#" onclick="openModal('privacy-modal'); return false;" class="text-gray-400 hover:text-purple-400 transition-colors cursor-pointer">Privacy Policy</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="border-t border-purple-900/50 pt-6 text-center text-white-500 text-sm">
+            <p>&copy; 2025 AstraSafe. GenIgnite 2025 Hackathon Submission. Developed by TEAM CODE2AIM</p>
+        </div>
+    </div>
+</footer>
+
+<!-- Team Modal -->
+<div id="team-modal" class="modal fixed inset-0 z-50 hidden items-center justify-center bg-black/80">
+    <div class="modal-content bg-black/90 p-8 rounded-2xl max-w-5xl w-full relative overflow-y-auto max-h-[90vh]">
+        <span class="close-modal absolute top-4 right-4 text-white text-3xl cursor-pointer" onclick="closeModal('team-modal')">&times;</span>
+        <h2 class="text-3xl font-bold mb-6 text-center bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">Meet Our Team</h2>
+        <p class="text-center text-gray-400 mb-8">The brilliant minds behind AstraSafe AI</p>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="team-card">
+                <div class="flex items-center gap-4 mb-3">
+                    <div class="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-2xl font-bold">MB</div>
+                    <div>
+                        <h3 class="text-xl font-bold text-white">Mehar Bhanwra</h3>
+                        <p class="text-sm text-purple-300">Team Lead</p>
+                    </div>
+                </div>
+                <p class="text-sm text-gray-400 mb-2">Model training and team coordination</p>
+                <div class="flex gap-3">
+                    <a href="mailto:meharbhanwra1004@gmail.com" class="text-purple-400 hover:text-purple-300 text-sm"><i class="fas fa-envelope"></i> Email</a>
+                    <a href="https://linkedin.com/in/mehar-bhanwra-a0b369215" class="text-purple-400 hover:text-purple-300 text-sm"><i class="fab fa-linkedin"></i> LinkedIn</a>
+                </div>
+            </div>
+
+            <div class="team-card">
+                <div class="flex items-center gap-4 mb-3">
+                    <div class="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-2xl font-bold">PR</div>
+                    <div>
+                        <h3 class="text-xl font-bold text-white">Pratham Ranjan</h3>
+                        <p class="text-sm text-purple-300">AI Engineer</p>
+                    </div>
+                </div>
+                <p class="text-sm text-gray-400 mb-2">Expert in model training, hyperparameter tuning, and performance optimization</p>
+                <div class="flex gap-3">
+                    <a href="mailto:prathamranjan10@gmail.com" class="text-purple-400 hover:text-purple-300 text-sm"><i class="fas fa-envelope"></i> Email</a>
+                    <a href="https://linkedin.com/in/pratham-ranjan" class="text-purple-400 hover:text-purple-300 text-sm"><i class="fab fa-linkedin"></i> LinkedIn</a>
+                </div>
+            </div>
+
+            <div class="team-card">
+                <div class="flex items-center gap-4 mb-3">
+                    <div class="w-16 h-16 rounded-full bg-gradient-to-br from-cyan-500 to-teal-500 flex items-center justify-center text-2xl font-bold">IJ</div>
+                    <div>
+                        <h3 class="text-xl font-bold text-white">Ishani Jindal</h3>
+                        <p class="text-sm text-purple-300">Frontend Developer and UX designer</p>
+                    </div>
+                </div>
+                <p class="text-sm text-gray-400 mb-2">Built the frontend and UI/UX designing</p>
+                <div class="flex gap-3">
+                    <a href="mailto:ijindal2005@gmail.com" class="text-purple-400 hover:text-purple-300 text-sm"><i class="fas fa-envelope"></i> Email</a>
+                    <a href="https://linkedin.com/in/ishani-jindal-37b3b9325" class="text-purple-400 hover:text-purple-300 text-sm"><i class="fab fa-linkedin"></i> LinkedIn</a>
+                </div>
+            </div>
+
+            <div class="team-card">
+                <div class="flex items-center gap-4 mb-3">
+                    <div class="w-16 h-16 rounded-full bg-gradient-to-br from-teal-500 to-green-500 flex items-center justify-center text-2xl font-bold">SJ</div>
+                    <div>
+                        <h3 class="text-xl font-bold text-white">Shreyansh Jaiswal</h3>
+                        <p class="text-sm text-purple-300">Data Specialist</p>
+                    </div>
+                </div>
+                <p class="text-sm text-gray-400 mb-2">Managed dataset preparation, annotation validation, and augmentation</p>
+                <div class="flex gap-3">
+                    <a href="mailto:jaiswal.shreyansh.official@gmail.com" class="text-purple-400 hover:text-purple-300 text-sm"><i class="fas fa-envelope"></i> Email</a>
+                    <a href="https://www.linkedin.com/in/shreyansh-jaiswal-3b5416338/" class="text-purple-400 hover:text-purple-300 text-sm"><i class="fab fa-linkedin"></i> LinkedIn</a>
+                </div>
+            </div>
+
+            <div class="team-card">
+                <div class="flex items-center gap-4 mb-3">
+                    <div class="w-16 h-16 rounded-full bg-gradient-to-br from-green-500 to-yellow-500 flex items-center justify-center text-2xl font-bold">AM</div>
+                    <div>
+                        <h3 class="text-xl font-bold text-white">Aditi Mehta</h3>
+                        <p class="text-sm text-purple-300">UI/UX Designer</p>
+                    </div>
+                </div>
+                <p class="text-sm text-gray-400 mb-2">Developed UI/UX designing</p>
+                <div class="flex gap-3">
+                    <a href="mailto:aditimehta21972@gmail.com" class="text-purple-400 hover:text-purple-300 text-sm"><i class="fas fa-envelope"></i> Email</a>
+                    <a href="https://www.linkedin.com/in/aditi-mehta-4bb596201/" class="text-purple-400 hover:text-purple-300 text-sm"><i class="fab fa-linkedin"></i> LinkedIn</a>
+                </div>
+            </div>
+
+            <div class="team-card">
+                <div class="flex items-center gap-4 mb-3">
+                    <div class="w-16 h-16 rounded-full bg-gradient-to-br from-yellow-500 to-orange-500 flex items-center justify-center text-2xl font-bold">CA</div>
+                    <div>
+                        <h3 class="text-xl font-bold text-white">Chirag Agarwal</h3>
+                        <p class="text-sm text-purple-300">Documentation</p>
+                    </div>
+                </div>
+                <p class="text-sm text-gray-400 mb-2">Created comprehensive project documentation</p>
+                <div class="flex gap-3">
+                    <a href="mailto:Chiragarg2023@gmail.com" class="text-purple-400 hover:text-purple-300 text-sm"><i class="fas fa-envelope"></i> Email</a>
+                    <a href="https://linkedin.com/in/chirag-agarwal-a93792273" class="text-purple-400 hover:text-purple-300 text-sm"><i class="fab fa-linkedin"></i> LinkedIn</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Terms Modal -->
+<div id="terms-modal" class="modal fixed inset-0 z-50 hidden items-center justify-center bg-black/80">
+    <div class="modal-content bg-black/90 p-8 rounded-2xl max-w-5xl w-full relative overflow-y-auto max-h-[90vh]">
+        <span class="close-modal absolute top-4 right-4 text-white text-3xl cursor-pointer" onclick="closeModal('terms-modal')">&times;</span>
+        <h2 class="text-3xl font-bold mb-6 text-center bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">Terms & Conditions</h2>
+        <div class="space-y-4 text-gray-300">
+            <div>
+                <h3 class="text-xl font-bold text-white mb-2">1. Acceptance of Terms</h3>
+                <p class="text-sm text-gray-400">By accessing and using AstraSafe AI ("the Service"), you accept and agree to be bound by the terms and provisions of this agreement.</p>
+            </div>
+            <div>
+                <h3 class="text-xl font-bold text-white mb-2">2. Use License</h3>
+                <p class="text-sm text-gray-400 mb-2">This is a demonstration project created for the GenIgnite 2025 Hackathon. Permission is granted to:</p>
+                <ul class="list-disc pl-6 text-sm text-gray-400 space-y-1">
+                    <li>View and interact with the demonstration</li>
+                    <li>Test the AI detection capabilities with provided images</li>
+                    <li>Review documentation and methodology</li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="text-xl font-bold text-white mb-2">3. Disclaimer</h3>
+                <p class="text-sm text-gray-400">This is a prototype system developed for educational and demonstration purposes. The service is provided "as is" without any warranties, expressed or implied. AstraSafe AI is not responsible for any decisions made based on the AI's detections.</p>
+            </div>
+            <div>
+                <h3 class="text-xl font-bold text-white mb-2">4. AI Model Usage</h3>
+                <p class="text-sm text-gray-400">The detection model has been trained using synthetic data from Duality AI's Falcon platform. Results may vary based on image quality, lighting conditions, and object positioning.</p>
+            </div>
+            <div>
+                <h3 class="text-xl font-bold text-white mb-2">5. Data Usage</h3>
+                <p class="text-sm text-gray-400">Images uploaded for detection are processed in real-time and are not stored on our servers. We do not collect or retain user-uploaded images.</p>
+            </div>
+            <div>
+                <h3 class="text-xl font-bold text-white mb-2">6. Intellectual Property</h3>
+                <p class="text-sm text-gray-400">All content, features, and functionality are owned by the AstraSafe AI team and are protected by international copyright, trademark, and other intellectual property laws.</p>
+            </div>
+            <div>
+                <h3 class="text-xl font-bold text-white mb-2">7. Modifications</h3>
+                <p class="text-sm text-gray-400">We reserve the right to modify or replace these terms at any time. Continued use of the service after changes constitutes acceptance of the new terms.</p>
+            </div>
+            <div class="pt-4 border-t border-purple-900/50">
+                <p class="text-xs text-gray-500">Last Updated: October 2025</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Privacy Modal -->
+<div id="privacy-modal" class="modal fixed inset-0 z-50 hidden items-center justify-center bg-black/80">
+    <div class="modal-content bg-black/90 p-8 rounded-2xl max-w-5xl w-full relative overflow-y-auto max-h-[90vh]">
+        <span class="close-modal absolute top-4 right-4 text-white text-3xl cursor-pointer" onclick="closeModal('privacy-modal')">&times;</span>
+        <h2 class="text-3xl font-bold mb-6 text-center bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">Privacy Policy</h2>
+        <div class="space-y-4 text-gray-300">
+            <div>
+                <h3 class="text-xl font-bold text-white mb-2">1. Information We Collect</h3>
+                <p class="text-sm text-gray-400 mb-2">AstraSafe AI is committed to protecting your privacy. We collect minimal information:</p>
+                <ul class="list-disc pl-6 text-sm text-gray-400 space-y-1">
+                    <li><strong>Technical Data:</strong> Browser type, device information, and access times for analytics</li>
+                    <li><strong>Usage Data:</strong> Interactions with the demo features (non-personally identifiable)</li>
+                    <li><strong>Uploaded Images:</strong> Processed in real-time only, not stored permanently</li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="text-xl font-bold text-white mb-2">2. How We Use Your Information</h3>
+                <p class="text-sm text-gray-400 mb-2">Information collected is used to:</p>
+                <ul class="list-disc pl-6 text-sm text-gray-400 space-y-1">
+                    <li>Provide and maintain the demonstration service</li>
+                    <li>Improve and optimize our AI detection model</li>
+                    <li>Analyze usage patterns to enhance user experience</li>
+                    <li>Respond to support requests and feedback</li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="text-xl font-bold text-white mb-2">3. Image Processing</h3>
+                <p class="text-sm text-gray-400">When you upload an image for detection:</p>
+                <ul class="list-disc pl-6 text-sm text-gray-400 space-y-1">
+                    <li>Images are processed immediately by our AI model</li>
+                    <li>Detection results are returned to your browser</li>
+                    <li>Images are NOT stored on our servers after processing</li>
+                    <li>No personal information is extracted from images</li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="text-xl font-bold text-white mb-2">4. Cookies and Tracking</h3>
+                <p class="text-sm text-gray-400">We use minimal cookies for essential functionality. We do not use tracking cookies for advertising purposes.</p>
+            </div>
+            <div>
+                <h3 class="text-xl font-bold text-white mb-2">5. Third-Party Services</h3>
+                <p class="text-sm text-gray-400">This demonstration may use third-party services:</p>
+                <ul class="list-disc pl-6 text-sm text-gray-400 space-y-1">
+                    <li>Duality AI's Falcon platform for model training and updates</li>
+                    <li>Content delivery networks (CDNs) for faster load times</li>
+                    <li>Analytics services for usage statistics</li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="text-xl font-bold text-white mb-2">6. Data Security</h3>
+                <p class="text-sm text-gray-400">We implement industry-standard security measures to protect your data. However, no method of transmission over the internet is 100% secure.</p>
+            </div>
+            <div>
+                <h3 class="text-xl font-bold text-white mb-2">7. Your Rights</h3>
+                <p class="text-sm text-gray-400">You have the right to:</p>
+                <ul class="list-disc pl-6 text-sm text-gray-400 space-y-1">
+                    <li>Access information we hold about you</li>
+                    <li>Request correction of inaccurate data</li>
+                    <li>Request deletion of your data</li>
+                    <li>Object to processing of your data</li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="text-xl font-bold text-white mb-2">8. Children's Privacy</h3>
+                <p class="text-sm text-gray-400">This service is not directed to individuals under 13. We do not knowingly collect personal information from children.</p>
+            </div>
+            <div>
+                <h3 class="text-xl font-bold text-white mb-2">9. Changes to Privacy Policy</h3>
+                <p class="text-sm text-gray-400">We may update this privacy policy periodically. Changes will be posted on this page with an updated revision date.</p>
+            </div>
+            <div>
+                <h3 class="text-xl font-bold text-white mb-2">10. Contact Us</h3>
+                <p class="text-sm text-gray-400">For privacy-related questions or concerns, contact us at: <a href="mailto:privacy@astrasafe.ai" class="text-purple-400 hover:text-purple-300">privacy@astrasafe.ai</a></p>
+            </div>
+            <div class="pt-4 border-t border-purple-900/50">
+                <p class="text-xs text-gray-500">Last Updated: October 2025</p>
+                <p class="text-xs text-gray-500 mt-1">This is a demonstration project for GenIgnite 2025 Hackathon</p>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="static/script.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+    function openModal(id){
+        const modal = document.getElementById(id);
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+    function closeModal(id){
+        const modal = document.getElementById(id);
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+    window.openModal = openModal;
+    window.closeModal = closeModal;
+});
+</script>
+</body>
+</html>
