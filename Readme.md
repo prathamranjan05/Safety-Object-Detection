@@ -7,7 +7,8 @@
 ---
 
 🌠 **A Brief of the Prototype**  
-![alt text](image.png)
+<img width="1880" height="925" alt="image" src="https://github.com/user-attachments/assets/0f75a60c-3c1c-448c-a0a8-060a3e9b75bd" />
+
 AstraSafe is an AI-powered computer vision system designed to **detect, monitor, and assess safety-critical objects inside space stations**.  
 
 It uses a **custom-trained YOLOv8 model** to automatically identify key safety objects, display confidence scores, and draw bounding boxes over detected objects.  
@@ -17,7 +18,8 @@ The platform supports both **live camera feed detection** and **image uploads**,
 ---
 
 🌍 **Modules Overview**
-![alt text](image-2.png)
+<img width="937" height="126" alt="image" src="https://github.com/user-attachments/assets/5c3f6ee8-c50b-4af7-8ff4-2541a1240b2b" />
+
 🧠 1. **Live Camera Feed Detection**
 - Uses device camera for **real-time inference**  
 - Captures frames every second and predicts safety objects  
@@ -27,7 +29,8 @@ The platform supports both **live camera feed detection** and **image uploads**,
 💡 Simulates continuous safety monitoring for astronauts in mission-critical environments.
 
 ☁️ 2. **Image Upload Detection**
-![alt text](image-1.png)
+<img width="1412" height="787" alt="image" src="https://github.com/user-attachments/assets/47bb3882-dace-4a60-9396-062891f3d646" />
+
 - Click or drag-and-drop to upload images  
 - Runs YOLOv8 predictions on uploaded images  
 - Draws bounding boxes on detected objects  
