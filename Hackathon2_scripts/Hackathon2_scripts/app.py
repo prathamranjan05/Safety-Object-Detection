@@ -3,11 +3,21 @@ from ultralytics import YOLO
 from PIL import Image
 import numpy as np
 import io
+import os
 
 # ----------------------
 # Configuration
 # ----------------------
-MODEL_PATH = r"D:\Hackathon2_scripts\Hackathon2_scripts\runs\detect\train_full\weights\best.pt"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MODEL_PATH = os.path.join(
+    BASE_DIR,
+    "runs",
+    "detect",
+    "train_full",
+    "weights",
+    "best.pt"
+)
+
 app = Flask(__name__)
 
 # Load YOLO model
