@@ -101,3 +101,12 @@ cd Safety-Object-Detection
 # 2. Open index.html in browser
 # Or serve via simple HTTP server
 python -m http.server 8080
+```
+**SCREENSHOTS**
+Features: -
+
+<img width="999" height="627" alt="image" src="https://github.com/user-attachments/assets/6f23b767-5c2a-4c7e-9481-e0f5f5eddd1f" />
+
+Uses: -
+
+<img width="1871" height="610" alt="image" src="https://github.com/user-attachments/assets/8ede887a-bbfa-496a-8834-1d1afaa0bd95" />
