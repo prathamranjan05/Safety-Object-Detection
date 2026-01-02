@@ -1,0 +1,242 @@
+html { scroll-behavior: smooth; }
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #0a0a1a;
+    color: #e0e0ff;
+}
+
+#bg-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    opacity: 0.1;
+}
+
+.glass-panel {
+    background: rgba(10, 10, 30, 0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 1rem;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s ease;
+}
+
+.glass-panel::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at var(--mouse-x) var(--mouse-y), rgba(192, 38, 211, 0.15), transparent 40%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    z-index: 0;
+}
+
+.glass-panel:hover {
+    transform: translateY(-8px);
+    border-color: rgba(192, 38, 211, 0.5);
+    box-shadow: 0 10px 40px rgba(192, 38, 211, 0.2);
+}
+
+.glass-panel:hover::before { opacity: 1; }
+.glass-panel > * { position: relative; z-index: 1; }
+
+.btn-primary {
+    background: linear-gradient(90deg, #4f46e5, #c026d3);
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 25px rgba(192, 38, 211, 0.6);
+}
+
+.section-header {
+    font-size: 2.5rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.nav-link { transition: color 0.3s; }
+.nav-link:hover { color: #c026d3; }
+
+.stats-badge {
+    background: linear-gradient(135deg, rgba(79, 70, 229, 0.3), rgba(192, 38, 211, 0.3));
+    border: 1px solid rgba(192, 38, 211, 0.5);
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.confidence-bar {
+    height: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-top: 0.25rem;
+}
+
+.confidence-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #10b981, #3b82f6);
+    transition: width 0.5s ease;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 100;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    overflow-y: auto;
+}
+
+.modal.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    margin: 2rem;
+    padding: 2rem;
+    border: 1px solid rgba(192, 38, 211, 0.3);
+    border-radius: 1rem;
+    max-width: 900px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+}
+
+.close-modal {
+    position: absolute;
+    right: 1.5rem;
+    top: 1.5rem;
+    font-size: 2rem;
+    cursor: pointer;
+    color: #e0e0ff;
+    transition: color 0.3s;
+}
+
+.close-modal:hover {
+    color: #c026d3;
+}
+
+.team-card {
+    background: rgba(30, 30, 60, 0.5);
+    border: 1px solid rgba(192, 38, 211, 0.2);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.team-card:hover {
+    border-color: rgba(192, 38, 211, 0.6);
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(192, 38, 211, 0.3);
+}
+
+.detection-item {
+    background: rgba(30, 30, 60, 0.5);
+    border: 1px solid rgba(79, 70, 229, 0.3);
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.detection-item:hover {
+    border-color: rgba(192, 38, 211, 0.5);
+    background: rgba(40, 40, 80, 0.5);
+}
+
+.pulse-dot {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.feature-icon {
+    font-size: 3rem;
+    background: linear-gradient(135deg, #4f46e5, #c026d3);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* --- New Styles for Bounding Boxes --- */
+.bbox {
+    pointer-events: none;
+    position: absolute;
+    border: 2px solid #c026d3;
+    box-shadow: 0 0 10px rgba(192, 38, 211, 0.5);
+    border-radius: 4px;
+    transition: opacity 0.3s ease;
+    z-index: 10;
+}
+
+.bbox div {
+    position: absolute;
+    top: -24px;
+    left: -2px;
+    background: #c026d3;
+    color: white;
+    padding: 2px 6px;
+    font-size: 10px;
+    font-weight: bold;
+    white-space: nowrap;
+    border-radius: 4px;
+}
+
+/* --- Upload Zone --- */
+#upload-drop-zone {
+    border: 2px dashed rgba(192, 38, 211, 0.3);
+    border-radius: 0.75rem;
+    padding: 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#upload-drop-zone.bg-white\/5 {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+#upload-drop-zone.border-purple-500\/80 {
+    border-color: rgba(192, 38, 211, 0.8);
+}
+
+/* --- Recent Detection Progress Bars --- */
+.recent-detection-bar {
+    height: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-top: 0.25rem;
+}
+
+.recent-detection-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #10b981, #3b82f6);
+    transition: width 0.5s ease;
+}
