@@ -1,8 +1,8 @@
 # AstraSafe: AI-Powered Space Station Safety Object Detection
-🛰️ Event -  
+🛰️ Event - GenIgnite 2025
 👨‍🚀 Team Name - CODE2AIM
 💡 Problem Statement - Safety Object Detection in Confined Space Environments  
-📩 Team Leader Email - 
+📩 Team Leader Email - meharbhanwra1004@gmail.com
 
 ---
 
@@ -86,6 +86,7 @@ The platform supports both **live camera feed detection** and **image uploads**,
 | Ishani Jindal  | Frontend Developer/ UI UX Designer |
 | Aditi Mehta | Frontend Developer/ UI UX Designer  |
 | Chirag Agarwal | Frontend Developer/ Documentation  |
+| Mehar Bhanwra | Team Leader / Data Visualization |
 
 ✨ Together, Team CODE2AIM ensures astronaut safety through **AI-powered monitoring systems**.
 
